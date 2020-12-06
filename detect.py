@@ -77,14 +77,11 @@ def detect(save_img=False):
         # Apply Classifier
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
-            #for p in pred: #Ayham Code!!!!
-            	#print(pred)
+
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
-            #print()
-            #print(i)
-            #print(det)
+ 
 
             if webcam:  # batch_size >= 1
                 p, s, im0 = Path(path[i]), '%g: ' % i, im0s[i].copy()
@@ -101,26 +98,28 @@ def detect(save_img=False):
 
                 # Print results
                 for c in det[:, -1].unique():
-                    print("--------------------------------------------")
-                    print(c)
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += '%g %ss, ' % (n, names[int(c)])  # add to string
-
+                car_counter = 0
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    print("--------------------------------------------")
-                    #print(*xyxy)
+                    
+                    print("\n--------------------------------------------") #AYHAM MAIN CODE
                     label = '%s %.2f' % (names[int(cls)], conf)
-                    print(str(label))
-                    print( "conf  "+ str('%.2f' % conf))
-                    #print("conf  " + str(conf))
-                    print("class  " + str('%s' % names[int(cls)]))
+                    
+                    confidence = float(str('%.2f' % conf))
+                    classType =  str('%s' % names[int(cls)])
+                    print( "conf  "+ str(confidence))
+                    print("class  " + classType)
 
-                    xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    print("----------"  + str(xywh))
+                    if confidence>0.5 and (classType =="truck" or classType=="car"):
+                        car_counter += 1
+                    else:
+                        continue
+
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        print("----------"  + str(xywh))
+                        #print("----------"  + str(xywh))
                         line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
                         with open(txt_path + '.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
@@ -128,9 +127,15 @@ def detect(save_img=False):
                     if save_img or view_img:  # Add bbox to image
                         label = '%s %.2f' % (names[int(cls)], conf)
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                        x = xyxy
+                        c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+                        crop_img = im0[c1[1]:c2[1], c1[0]:c2[0]]
+                        #cv2.imshow("cropped_car"+str(car_counter), crop_img)
+                        cv2.imwrite(save_path+"_cropped_"+str(car_counter), crop_img) #Save cropped car with cofidence
+                        #cv2.waitKey(0)
 
             # Print time (inference + NMS)
-            print('%sDone. (%.3fs)' % (s, t2 - t1))
+            #print('%sDone. (%.3fs)' % (s, t2 - t1))
 
             # Stream results
             if view_img:
@@ -155,9 +160,10 @@ def detect(save_img=False):
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
                     vid_writer.write(im0)
 
-    if save_txt or save_img:
+    if (save_txt or save_img) and False: #to prevent sabing for now
         print('Results saved to %s' % save_dir)
 
+    print()
     print('Done. (%.3fs)' % (time.time() - t0))
 
 
@@ -180,7 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     opt = parser.parse_args()
-    print(opt)
+    #print(opt)
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
