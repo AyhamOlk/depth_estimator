@@ -131,7 +131,7 @@ def detect(save_img=False):
                         c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
                         crop_img = im0[c1[1]:c2[1], c1[0]:c2[0]]
                         #cv2.imshow("cropped_car"+str(car_counter), crop_img)
-                        cv2.imwrite(save_path+"_cropped_"+str(car_counter), crop_img) #Save cropped car with cofidence
+                        cv2.imwrite(save_path+"_cropped_"+str(car_counter)+".jpg", crop_img) #Save cropped car with cofidence
                         #cv2.waitKey(0)
 
             # Print time (inference + NMS)
