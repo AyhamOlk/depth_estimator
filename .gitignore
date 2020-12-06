@@ -4,3 +4,9 @@ build
 runs/*
 runs/
 runs
+models/__pycache__/*
+models/__pycache__/
+models/__pycache__
+utils/__pycache__/*
+utils/__pycache__/
+utils/__pycache__
