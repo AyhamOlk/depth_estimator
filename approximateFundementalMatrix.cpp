@@ -14,7 +14,7 @@ using namespace cv;
 
 //THIS code uses the 8 point algorithm to approximate the fundamental matrix
 
-Mat eight_point(Mat left, Mat right, Mat &F){
+Mat eight_point(Mat left, Mat right, Mat &F, int height1, int width1, int height2, int width2){
     /*
     1- Build the constraint matrix A from observations
     2- Compute [U,D,V] = svd(A)
@@ -27,8 +27,32 @@ Mat eight_point(Mat left, Mat right, Mat &F){
     */
     // Construction of A
     // std::cout << right << std::endl;
+
+	std::cout<<left<<std::endl;
+	std::cout<<right<<std::endl;
+	return F;
+
+	//normalization
+	Mat T = Mat::zeros(3,3,CV_32F); Mat T_prime = Mat::zeros(3,3,CV_32F);
+    T.at<float>(0,0) = 2.0/width1;
+    T.at<float>(0,2) = -1;
+    T.at<float>(1,1) = 2.0/height1;
+    T.at<float>(1,2) = -1;
+    T.at<float>(2,2) = 1;
+    T_prime.at<float>(0,0) = 2.0/width2;
+    T_prime.at<float>(0,2) = -1;
+    T_prime.at<float>(1,1) = 2.0/height2;
+    T_prime.at<float>(1,2) = -1;
+    T_prime.at<float>(2,2) = 1;
+
     Mat A = Mat::ones(left.rows, 9, CV_32F);
     for(int i=0;i<A.rows;i++){
+
+		left.at<int>(i,0) = 2*left.at<int>(i,0)/height1 - 1;
+        left.at<int>(i,1) = 2*left.at<int>(i,1)/width1 - 1;
+        right.at<int>(i,0) = 2*right.at<int>(i,0)/height2 - 1;
+        right.at<int>(i,1) = 2*right.at<int>(i,1)/width2 - 1;
+
         A.at<float>(i,8) = 1; // last element is 1
         A.at<float>(i,7) = left.at<int>(i,1);
         A.at<float>(i,6) = left.at<int>(i,0);
@@ -44,7 +68,8 @@ Mat eight_point(Mat left, Mat right, Mat &F){
     //std::cout << A << std::endl;
     // Compute SVD
     Mat S, U, VT; // S contains the eigen values
-    SVDecomp(A, S, U, VT, cv::SVD::FULL_UV);
+    Mat A_AT = A.t()*A;
+    SVDecomp(A_AT, S, U, VT, cv::SVD::FULL_UV);        //TODO A*AT or AT*A
     // std::cout << S << std::endl;
     // std::cout << VT << std::endl;
     // std::cout << S.at<float>(S.rows-1, 0) << std::endl;
@@ -54,6 +79,8 @@ Mat eight_point(Mat left, Mat right, Mat &F){
     // 3- Extract fundamental matrix from the column of V corresponding to the smallest singular value.
     Mat smallest_eigen_vec = VT.row(index);
 
+    //std::cout<<"V is :"<<VT.t()<<std::endl;
+    //std::cout<<"smalles eigne vec is :"<<smallest_eigen_vec;
     // 4- reshape this 9D vector to a 3x3 matrix
     //Mat F = Mat::zeros(3,3,CV_32F);
     int counter = 0;
@@ -71,25 +98,49 @@ Mat eight_point(Mat left, Mat right, Mat &F){
     diag.at<float> (0,0) = S1.at<float>(0,0);
     diag.at<float> (1,1) = S1.at<float>(1,0);
     F = U1*diag*VT1;
+
+    std::cout << F << std::endl;
+
+
     //std::cout << "S1 = " << S1 << std::endl;
     //std::cout << "diag = " << diag << std::endl;
 
 	//std::cout<<"\n\n The F matrix you are looking for is: \n\n";
-    //std::cout << F << std::endl;
+    
+
+
+
+
+
+    F = T_prime.t()*F*T;
+    std::cout<<F<<std::endl;
 	return F;
 }
 
 
 int main()
 {
-	string expName = "cars";
+	string expName = "faces_5";
 
-	Mat I_left = imread("../runs/detect/exp/cropped1.jpg", IMREAD_GRAYSCALE);
-	Mat I_right = imread("../runs/detect/exp/cropped2.jpg", IMREAD_GRAYSCALE);
+	//Mat I_left = imread("../runs/detect/exp/cropped1.jpg", IMREAD_GRAYSCALE);
+	//Mat I_right = imread("../runs/detect/exp/cropped2.jpg", IMREAD_GRAYSCALE);
+//	Mat I_left = imread("../data/car1.jpeg", IMREAD_GRAYSCALE);
+//	Mat I_right = imread("../data/car1.jpeg", IMREAD_GRAYSCALE);
 
-//	Mat I_left = imread("../tsukuba1.png", IMREAD_GRAYSCALE);
-//	Mat I_right = imread("../tsukuba2.png", IMREAD_GRAYSCALE);
 
+	Mat I_left = imread("../data/face00.tif", IMREAD_GRAYSCALE);
+
+	int height1 = I_left.rows; 
+	int width1 = I_left.cols;
+
+
+
+	Mat I_right = imread("../data/face01.tif", IMREAD_GRAYSCALE);
+
+	int height2 = I_right.rows;
+	int width2 = I_right.cols;
+
+	std::cout<<height1<<" "<<width1<< " "<<height1<<" "<<height2<<"\n";
 	//imshow("I_left", I_left);
 	//imshow("I_right", I_right);
 
@@ -182,7 +233,7 @@ int main()
 
 	//Fundemental Matrix is 3by3s
 	Mat F = Mat::zeros(3,3,CV_32F);
-	F = eight_point(left, right, F);
+	F = eight_point(left, right, F, height1, width1, height2, width2);
 
 	string pathName = "../runs/descriptors_F_Matrix/"+expName;
 	//std::cout<<F;
