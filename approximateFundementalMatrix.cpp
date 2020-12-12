@@ -128,14 +128,16 @@ int main()
 //	Mat I_right = imread("../data/car1.jpeg", IMREAD_GRAYSCALE);
 
 
-	Mat I_left = imread("../data/face00.tif", IMREAD_GRAYSCALE);
+	//Mat I_left = imread("../data/face00.tif", IMREAD_GRAYSCALE);
+	Mat I_left = imread("../data/box1.jpg", IMREAD_GRAYSCALE);
 
 	int height1 = I_left.rows; 
 	int width1 = I_left.cols;
 
 
 
-	Mat I_right = imread("../data/face01.tif", IMREAD_GRAYSCALE);
+	//Mat I_right = imread("../data/face01.tif", IMREAD_GRAYSCALE);
+	Mat I_right = imread("../data/box2.jpg", IMREAD_GRAYSCALE);
 
 	int height2 = I_right.rows;
 	int width2 = I_right.cols;
