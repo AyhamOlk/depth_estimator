@@ -3,7 +3,6 @@
 #include <fstream>
 #include "image.h"
 
-
 struct Data {
 	Image<Vec3b> I1, I2; // original rgb images
 	Image<uchar> G1, G2; // grayscale versions of rgb images
@@ -39,7 +38,6 @@ void onMouse1(int event, int x, int y, int foo, void* p)
 			best_p.x = x; best_p.y = y;
 		}
 	}
-	// std::cout << "For Point (" << x << ", " << y << ") the best correlated Point (" << best_p.x << ", " << best_p.y << ") with the best correlation=" << best_corr << std::endl;
 	circle(D->I2, best_p, 2, Scalar(0,255,0), 2);
 
 	imshow("I2", D->I2);
@@ -205,7 +203,7 @@ void calculate_depth_map(Data D){
 
     // Disparity calculation
 	Mat disparity(m,n,CV_8UC1); // shift in position
-	int width = 20, height = 20; // TODO: one size since the window patch is square?
+	int width = 10, height = 10; // TODO: one size since the window patch is square?
 	Image<uchar> left(width, height), right(width, height), best_right(width, height);
 
 	// TODO: the condition to terminate
