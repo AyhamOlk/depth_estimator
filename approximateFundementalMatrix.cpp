@@ -240,32 +240,26 @@ int main()
 	string pathName = "../runs/Fmatrix";
 	//std::cout<<F;
 	
-	if (mkdir(pathName.c_str(), 0777) == -1) {
-		cerr << "Error :  " << strerror(errno) << endl; 
-	}
-	else {
-		cout << "Directory created\n"; 
-		imwrite(pathName+"/Features_left.jpg", J);
-		
-		imwrite(pathName+"/Features_right.jpg", J2);
-		imwrite(pathName+"/KNN_matches.jpg", res);
-		imwrite(pathName+"/RANSAC_good_matches.jpg", resGoodMatches);
-		ofstream myfile;
- 		myfile.open (pathName+"/Fmatrix.txt");
-  		myfile << "Fundamental Matrix Of Experiment: ";
-		myfile << expName;
-		myfile << " --> is:\n\n";
+	imwrite(pathName+"/Features_left.jpg", J);
+	
+	imwrite(pathName+"/Features_right.jpg", J2);
+	imwrite(pathName+"/KNN_matches.jpg", res);
+	imwrite(pathName+"/RANSAC_good_matches.jpg", resGoodMatches);
+	ofstream myfile;
+	myfile.open (pathName+"/Fmatrix.txt");
+	myfile << "Fundamental Matrix Of Experiment: ";
+	myfile << expName;
+	myfile << " --> is:\n\n";
 
-		for(int i=0;i<3;i++){
-			for(int j=0;j<3;j++){
-				myfile << F(i,j);
-			}
-			myfile << '\n';
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			myfile << F(i,j);
 		}
-
-  		myfile.close();
-		
+		myfile << '\n';
 	}
+
+	myfile.close();
+		
 		
 	//waitKey(0);
 	return 0;
