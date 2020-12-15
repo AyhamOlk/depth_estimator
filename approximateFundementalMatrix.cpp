@@ -122,14 +122,14 @@ int main()
 {
 	string expName = "faces_5";
 
-	//Mat I_left = imread("../runs/detect/exp/cropped1.jpg", IMREAD_GRAYSCALE);
-	//Mat I_right = imread("../runs/detect/exp/cropped2.jpg", IMREAD_GRAYSCALE);
+	Mat I_left = imread("../runs/detect/exp/car_blue_1.jpeg_cropped_1.jpg", IMREAD_GRAYSCALE);
+	Mat I_right = imread("../runs/detect/exp/car_blue_2.jpeg_cropped_1.jpg", IMREAD_GRAYSCALE);
 //	Mat I_left = imread("../data/car1.jpeg", IMREAD_GRAYSCALE);
 //	Mat I_right = imread("../data/car1.jpeg", IMREAD_GRAYSCALE);
 
 
 	//Mat I_left = imread("../data/face00.tif", IMREAD_GRAYSCALE);
-	Mat I_left = imread("../data/box1.jpg", IMREAD_GRAYSCALE);
+	// Mat I_left = imread("../data/box1.jpg", IMREAD_GRAYSCALE);
 
 	int height1 = I_left.rows; 
 	int width1 = I_left.cols;
@@ -137,7 +137,7 @@ int main()
 
 
 	//Mat I_right = imread("../data/face01.tif", IMREAD_GRAYSCALE);
-	Mat I_right = imread("../data/box2.jpg", IMREAD_GRAYSCALE);
+	// Mat I_right = imread("../data/box2.jpg", IMREAD_GRAYSCALE);
 
 	int height2 = I_right.rows;
 	int width2 = I_right.cols;
@@ -237,7 +237,7 @@ int main()
 	Mat F = Mat::zeros(3,3,CV_32F);
 	F = eight_point(left, right, F, height1, width1, height2, width2);
 
-	string pathName = "../runs/descriptors_F_Matrix/"+expName;
+	string pathName = "../runs/Fmatrix/exp";
 	//std::cout<<F;
 	
 	if (mkdir(pathName.c_str(), 0777) == -1) {
@@ -251,11 +251,18 @@ int main()
 		imwrite(pathName+"/KNN_matches.jpg", res);
 		imwrite(pathName+"/RANSAC_good_matches.jpg", resGoodMatches);
 		ofstream myfile;
- 		myfile.open (pathName+"/F_Matrix.txt");
+ 		myfile.open (pathName+"/Fmatrix.txt");
   		myfile << "Fundamental Matrix Of Experiment: ";
 		myfile << expName;
 		myfile << " --> is:\n\n";
-		myfile << F;
+
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				myfile << F(i,j);
+			}
+			myfile << '\n';
+		}
+
   		myfile.close();
 		
 	}
