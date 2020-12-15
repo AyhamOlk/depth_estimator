@@ -24,3 +24,8 @@ python3 detect.py
 ./approximate_F
 ./disparity
 ```
+The resulting depth map image will be located in the *runs/disparity* folder under the name **disparity.jpg**.
+
+In case of facing issues, do not hesitate to contact us:
+Ayham Olleik <ayham.olleik@polytechnique.edu>
+Khalig Aghakarimov <khalig.aghakarimov@polytechnique.edu>
