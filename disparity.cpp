@@ -320,7 +320,7 @@ int main(int argc, char** argv)
 	D.G2.convertTo(D.F2, CV_32F);
 
 	// reading fundamental matrix from the file
-	ifstream f("../runs/Fmatrix/exp/Fmatrix.txt");
+	ifstream f("../runs/Fmatrix/Fmatrix.txt");
 	for(int i=0;i<3;i++){
 		for(int j=0;j<3;j++){
 			f >> D.F(i,j);

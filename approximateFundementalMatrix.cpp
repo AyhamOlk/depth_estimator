@@ -28,10 +28,6 @@ Mat eight_point(Mat left, Mat right, Mat &F, int height1, int width1, int height
     // Construction of A
     // std::cout << right << std::endl;
 
-	std::cout<<left<<std::endl;
-	std::cout<<right<<std::endl;
-	return F;
-
 	//normalization
 	Mat T = Mat::zeros(3,3,CV_32F); Mat T_prime = Mat::zeros(3,3,CV_32F);
     T.at<float>(0,0) = 2.0/width1;
@@ -250,6 +246,7 @@ int main()
 
 	for(int i=0;i<3;i++){
 		for(int j=0;j<3;j++){
+			// std::cout << F.at<float>(i,j);
 			myfile << F.at<float>(i,j) << ' ';
 		}
 		myfile << '\n';
