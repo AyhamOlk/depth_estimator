@@ -1,0 +1,6 @@
+opencv2
+torch
+cv2
+numpy
+time
+argparse

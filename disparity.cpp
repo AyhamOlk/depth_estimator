@@ -5,10 +5,10 @@
 
 
 struct Data {
-	Image<Vec3b> I1, I2;
-	Image<uchar> G1, G2;
-	Image<float> F1, F2;
-	Matx33d F;
+	Image<Vec3b> I1, I2; // original rgb images
+	Image<uchar> G1, G2; // grayscale versions of rgb images
+	Image<float> F1, F2; // floating point version of rgb images
+	Matx33d F; // Fundamental matrix
 };
 
 void onMouse1(int event, int x, int y, int foo, void* p)
@@ -143,9 +143,11 @@ std::vector<Point> build_epi_window(Image<uchar>& right, Image<uchar>& I2, Vec3d
 		// cur_y = val; //-(cur_x*perp_line(0)+perp_line(2))/perp_line(1);
 		// cur_x = (-perp_line(1)*cur_y - perp_line(2))/perp_line(0);
 		cur_y = -(cur_x*perp_line(0)+perp_line(2))/perp_line(1);
+
+		std::cout << cur_x << ", " << cur_y << '\n';
 	
 		if(cur_x < 0 || cur_x > I2.cols-1 || cur_y < 0 || cur_y > I2.rows-1){
-			std::cout << "Error 2\n";
+			// std::cout << "Error 2\n";
 		}
 	}
 	return best_points;
@@ -203,12 +205,12 @@ void calculate_depth_map(Data D){
 
     // Disparity calculation
 	Mat disparity(m,n,CV_8UC1); // shift in position
-	int width = 30, height = 30; // TODO: one size since the window patch is square?
+	int width = 10, height = 10; // TODO: one size since the window patch is square?
 	Image<uchar> left(width, height), right(width, height), best_right(width, height);
 
 	// TODO: the condition to terminate
-	for(int i=600;i<D.I1.rows-height;i+=height){
-		for(int j=200;j<D.I1.cols-width;j+=width){
+	for(int i=0;i<D.I1.rows-height;i+=height){
+		for(int j=0;j<D.I1.cols-width;j+=width){
 			// filling the windows with 0s
 			for(int i=0;i<width;i++){
 				for(int j=0;j<height;j++){
@@ -242,23 +244,27 @@ void calculate_depth_map(Data D){
 
 				// TODO: continue in the following condition or assign boundary values?
 				if (y < 0 || y > D.I2.rows-1){
+					// std::cout << "Continue\n";
 					continue;
 				}
 
 				// creation of right window
-				best_right_points = build_epi_window(right, D.G2, l, x, y);
+				// best_right_points = build_epi_window(right, D.G2, l, x, y);
 				
 				Point p2(x,y);
-				double cur_val = NCC(D.G1,p1,D.G2,p2,25);
+				double cur_val = NCC(D.F1,p1,D.F2,p2,25);
+				// std::cout << "P1 = " << p1 << ", P2 = " << p2 << ", cur_val = " << cur_val << '\n';
 				// double cur_val = ZNCC(left, right);
 				// double cur_val = SAD(D.I1, D.I2, i, j, y, x);
 				if (cur_val > best_corr){
+					// std::cout << "Val=" << cur_val << '\n';
 					dispar = abs(y-i); // TODO: do we put the indices correctly?
 					best_corr = cur_val;
 					p_best = p2;
 					best_right = right;
 				}
 			}
+			// std::cout << p_best << '\n';
 			best_right_points.push_back(p_best);
 			circle(D.I2, p_best, 2, Scalar(0,255,0), 2);
 			// std::cout << "Finished ZNCC\n";
@@ -272,20 +278,23 @@ void calculate_depth_map(Data D){
 			}
 			// std::cout << "Finished Disparity filling\n";
 
-			break;
+			// break;
+			// std::cout << j << '\n';
 		}
 		
 		for(auto it = best_right_points.begin(); it<best_right_points.end();it++){
 			Point p (it->x, it->y);
-			circle(D.I2, p, 2, Scalar(0,255,0), 2);
-			std::cout << p << '\n';
+			// circle(D.I2, p, 2, Scalar(0,255,0), 2);
+			// std::cout << p << '\n';
 		}
 
-		break;
+		std::cout << i << '\n';
+		// break;
 	}
 	// std::cout << "Finished dissimilarity calculation.\n";
 	imshow("I1", D.I1);
 	imshow("I2", D.I2);
+	imshow("disparity", disparity);
 	waitKey(0);
 
     cv::imwrite("disparity.jpg", disparity);
@@ -310,6 +319,15 @@ int main(int argc, char** argv)
 	D.G1.convertTo(D.F1, CV_32F);
 	D.G2.convertTo(D.F2, CV_32F);
 
+	// reading fundamental matrix from the file
+	ifstream f("../Fmatrix.txt");
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			f >> D.F(i,j);
+		}
+	}
+
+	// calculating depth map
 	calculate_depth_map(D);
 
 	return 0;
