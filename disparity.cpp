@@ -205,7 +205,7 @@ void calculate_depth_map(Data D){
 
     // Disparity calculation
 	Mat disparity(m,n,CV_8UC1); // shift in position
-	int width = 10, height = 10; // TODO: one size since the window patch is square?
+	int width = 20, height = 20; // TODO: one size since the window patch is square?
 	Image<uchar> left(width, height), right(width, height), best_right(width, height);
 
 	// TODO: the condition to terminate
@@ -297,7 +297,7 @@ void calculate_depth_map(Data D){
 	imshow("disparity", disparity);
 	waitKey(0);
 
-    cv::imwrite("disparity.jpg", disparity);
+    cv::imwrite("../runs/disparity/disparity.jpg", disparity);
    	// TODO: disparity image or depth map?
 }
 
@@ -326,6 +326,7 @@ int main(int argc, char** argv)
 			f >> D.F(i,j);
 		}
 	}
+	std::cout << D.F << '\n';
 
 	// calculating depth map
 	calculate_depth_map(D);

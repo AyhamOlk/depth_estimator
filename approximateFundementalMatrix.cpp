@@ -247,13 +247,10 @@ int main()
 	imwrite(pathName+"/RANSAC_good_matches.jpg", resGoodMatches);
 	ofstream myfile;
 	myfile.open (pathName+"/Fmatrix.txt");
-	myfile << "Fundamental Matrix Of Experiment: ";
-	myfile << expName;
-	myfile << " --> is:\n\n";
 
 	for(int i=0;i<3;i++){
 		for(int j=0;j<3;j++){
-			myfile << F(i,j);
+			myfile << F.at<float>(i,j) << ' ';
 		}
 		myfile << '\n';
 	}
@@ -264,5 +261,4 @@ int main()
 	//waitKey(0);
 	return 0;
 }
-
 
