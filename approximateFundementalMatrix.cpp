@@ -237,7 +237,7 @@ int main()
 	Mat F = Mat::zeros(3,3,CV_32F);
 	F = eight_point(left, right, F, height1, width1, height2, width2);
 
-	string pathName = "../runs/Fmatrix/exp";
+	string pathName = "../runs/Fmatrix";
 	//std::cout<<F;
 	
 	if (mkdir(pathName.c_str(), 0777) == -1) {
