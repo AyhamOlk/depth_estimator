@@ -24,7 +24,14 @@ python3 detect.py
 ./approximate_F
 ./disparity
 ```
-The resulting depth map image will be located in the *runs/disparity* folder under the name **disparity.jpg**.
+The resulting depth map image will be located in the *depth_estimator/runs/disparity* folder under the name **disparity.jpg**.
+
+We have also other file in the repository called *pixel_SAD.cpp* and correspondingly its executable file will be *pixel_SAD*. If you want to run the version with window of size 1 (i.e. movement pixel by pixel) where we applied SAD on 2 car images. To be able to see the results of this implementation it is enough to run the following commands:
+```
+python3 detect.py
+./pixel_SAD
+```
+which will output you the disparity map (best result that we got), but also will save it under the path **depth_estimator/runs/disparity/disparity2.jpg**.
 
 In case of facing issues, do not hesitate to contact us:
 Ayham Olleik <ayham.olleik@polytechnique.edu>
